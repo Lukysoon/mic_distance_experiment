@@ -3,9 +3,9 @@
 Real-time audio classification system to detect microphone distance using machine learning.
 
 ## Autoinstall
-
+```bash
 git clone https://github.com/Lukysoon/mic_distance_experiment.git;cd mic_distance_experiment;chmod +x install.sh;./install.sh
-
+```bash
 ## Prerequisites
 
 Install required dependencies:
