@@ -587,15 +587,26 @@ class AudioDistanceClassifier:
         # Škálování features
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_test_scaled = self.scaler.transform(X_test)
+
+        objective_function = 'binary:logistic'
+
+        if self.n_classes > 2:
+            objective_function = 'multi:softmax'
         
         # Trénování modelu
         if self.model_type == 'xgboost':
             self.model = xgb.XGBClassifier(
-                n_estimators=100,
-                max_depth=5,
-                learning_rate=0.1,
-                objective='multi:softmax',
-                num_class=self.n_classes,
+                n_estimators=500,           # Try more trees
+                max_depth=5,                # Start shallow to avoid overfitting
+                learning_rate=0.05,         # Lower rate with more estimators
+                objective=objective_function,
+                # subsample=0.8,              # Row sampling
+                # colsample_bytree=0.8,       # Column sampling
+                # min_child_weight=1,         # Minimum sum of weights in child
+                # gamma=0,                    # Minimum loss reduction
+                # reg_alpha=0,                # L1 regularization
+                # reg_lambda=1,               # L2 regularization
+                # scale_pos_weight=1,         # For imbalanced datasets
                 random_state=42
             )
         else:
@@ -789,21 +800,12 @@ class AudioDistanceClassifier:
 # Příklad použití
 if __name__ == "__main__":
     # Initialize classifier
-    classifier = AudioDistanceClassifier(model_type='xgboost', n_classes=2)
     extractor = AudioFeatureExtractor()
     
-    # Define your distance categories
-    # class_mapping = {
-    #     'very_far': 0,    # > 2 meters
-    #     'far': 1,         # 1-2 meters
-    #     'close': 2,       # 0.5-1 meter
-    #     'very_close': 3   # < 0.5 meter
-    # }
-    
     # Load dataset
-    audio_files, labels, class_names = extractor.load_dataset_from_directories(
-        'dataset'
-    )
+    audio_files, labels, class_names = extractor.load_dataset_from_directories('dataset')
+
+    classifier = AudioDistanceClassifier(model_type='xgboost', n_classes=len(class_names))
     
     # Store class names in classifier
     classifier.class_names = class_names
@@ -819,11 +821,3 @@ if __name__ == "__main__":
 
     # Save the trained model
     classifier.save_model('trained_model.pkl')
-
-    # Test on new audio (if available)
-    # feedback = classifier.get_interpretable_feedback('test_audio.wav')
-    # print(f"\nPredikce: {feedback['prediction']}")
-    # print(f"Jistota: {feedback['confidence']:.1f}%")
-    # print("\nDoporučení:")
-    # for rec in feedback['recommendations']:
-    #     print(f"  • {rec}")

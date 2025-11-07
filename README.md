@@ -35,8 +35,10 @@ dataset/
 
 Then train the model:
 
+(you must wait until the .pkl file is generated. It could take time when you have big dataset)
+
 ```bash
-python AudioDistance.py
+python3 AudioDistance.py
 ```
 
 This will:
@@ -51,13 +53,13 @@ This will:
 Once you have a trained model, run the real-time classifier:
 
 ```bash
-python realtime_classifier.py
+python3 realtime_classifier.py
 ```
 
 Or specify a custom model path:
 
 ```bash
-python realtime_classifier.py path/to/your/model.pkl
+python3 realtime_classifier.py path/to/your/model.pkl
 ```
 
 ## Real-time Visualization
@@ -75,7 +77,7 @@ The real-time classifier will show 4 visualizations:
 
 You can modify training parameters:
 
-```python
+```python3
 classifier = AudioDistanceClassifier(
     model_type='xgboost',  # or 'gradientboosting'
     n_classes=4            # number of distance categories
@@ -86,7 +88,7 @@ classifier = AudioDistanceClassifier(
 
 You can adjust real-time parameters:
 
-```python
+```python3
 rt_classifier = RealtimeAudioClassifier(
     model_path='trained_model.pkl',
     sr=16000,              # sample rate
